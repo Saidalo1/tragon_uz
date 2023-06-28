@@ -7,7 +7,7 @@ from orders.models import UserFeedback
 
 @admin.register(UserFeedback)
 class UserFeedbackAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'get_ordered_services')
+    list_display = ('name', 'phone', 'get_ordered_services',  'source', 'created_at')
 
     def get_ordered_services(self, obj):
         services = obj.services.all()
