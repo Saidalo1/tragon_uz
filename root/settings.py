@@ -32,7 +32,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # My apps
-    'tragon.apps.TragonConfig',
+    'developers',
+    'portfolios',
+    'services',
+    'sources',
+    'tools',
+    'orders',
 
     # Third party apps
     'rest_framework',

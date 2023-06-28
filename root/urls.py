@@ -17,7 +17,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # index
-    path('', include('tragon.urls')),
+    path('', include('developers.urls')),
+    path('', include('portfolios.urls')),
+    path('', include('services.urls')),
+    path('', include('sources.urls')),
+    path('', include('tools.urls')),
+    path('', include('orders.urls')),
 
     # Swagger
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
