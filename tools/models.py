@@ -11,3 +11,6 @@ class Tools(MPTTModel, CreatedTimeBaseModel):
 
     class Meta:
         db_table = 'tools'
+
+    def __str__(self):
+        return self.name

@@ -14,8 +14,8 @@ class UserFeedbackSerializer(ModelSerializer):
 
     def create(self, validated_data):
         services_data = validated_data.pop('services')
-        user_feedback, created = UserFeedback.objects.get_or_create(**validated_data)
+        user_feedback = UserFeedback.objects.create(**validated_data)
         for service_data in services_data:
             service = SubService.objects.get(pk=service_data.pk)
-            user_feedback.services.add(service)
+            UserFeedback.services.through.objects.create(feedback=user_feedback, service=service)
         return user_feedback
