@@ -1,10 +1,7 @@
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from tools.views import ToolsReadOnlyModelViewSet
-
-router = DefaultRouter()
-router.register('tools', ToolsReadOnlyModelViewSet, 'tools')
+from tools.views import ToolsListAPIView
 
 urlpatterns = [
-    *router.urls
+    path('tools/', ToolsListAPIView.as_view(), name='tools')
 ]

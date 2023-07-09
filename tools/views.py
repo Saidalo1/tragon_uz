@@ -1,10 +1,9 @@
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.generics import ListAPIView
 
 from tools.models import Tools
 from tools.serializers import ToolsSerializer
 
 
-class ToolsReadOnlyModelViewSet(ReadOnlyModelViewSet):
+class ToolsListAPIView(ListAPIView):
     queryset = Tools.objects.all()
     serializer_class = ToolsSerializer
-    lookup_field = 'id'

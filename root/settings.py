@@ -1,6 +1,7 @@
 from os.path import join
 from pathlib import Path
 
+import telebot
 from dotenv import load_dotenv
 
 from shared.django import os_environ_get
@@ -139,3 +140,10 @@ JAZZMIN_SETTINGS = {
     "site_brand": "Tragon UZ",
     "welcome_sign": "Welcome to the Tragon UZ",
 }
+
+# Telegram Settings
+bot_token = os_environ_get('BOT_TOKEN')
+chat_id = os_environ_get('CHAT_ID')
+
+# Telebot
+bot = telebot.TeleBot(bot_token)

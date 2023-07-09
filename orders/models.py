@@ -6,7 +6,7 @@ from sources.models import Source
 
 
 class UserFeedbackService(CreatedTimeBaseModel):
-    feedback = ForeignKey('UserFeedback', CASCADE)
+    feedback = ForeignKey('UserFeedback', CASCADE, related_name='user_feedback_services', db_index=True)
     service = ForeignKey(SubService, CASCADE)
 
     class Meta:

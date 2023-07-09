@@ -1,8 +1,14 @@
+from threading import Thread
+
+from rest_framework.exceptions import ValidationError
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
 
-from orders.models import UserFeedback
+from orders.models import UserFeedback, UserFeedbackService
 from services.models import SubService
+from shared.django.functions import validate_phone_number
+from shared.django.utils import send_notification_async
+from sources.models import Source
 
 
 class UserFeedbackSerializer(ModelSerializer):
@@ -12,10 +18,35 @@ class UserFeedbackSerializer(ModelSerializer):
         model = UserFeedback
         fields = ('name', 'phone', 'source', 'services')
 
+    @staticmethod
+    def validate_phone(value):
+        try:
+            validate_phone_number(value)
+        except ValidationError:
+            raise ValidationError(
+                'Invalid phone number. Please provide a valid phone number in the format of Uzbekistan.')
+        return value
+
+    @staticmethod
+    def validate_source(value):
+        if not Source.objects.filter(id=value.id).exists():
+            raise ValidationError('Invalid source. Please provide a valid source ID.')
+        return value
+
+    @staticmethod
+    def validate_services(value):
+        if not value:
+            raise ValidationError('At least one service ID must be provided.')
+        return value
+
     def create(self, validated_data):
         services_data = validated_data.pop('services')
         user_feedback = UserFeedback.objects.create(**validated_data)
-        for service_data in services_data:
-            service = SubService.objects.get(pk=service_data.pk)
-            UserFeedback.services.through.objects.create(feedback=user_feedback, service=service)
+        feedback_services = [UserFeedbackService(feedback=user_feedback, service_id=service_data.pk) for service_data in
+                             services_data]
+        UserFeedbackService.objects.bulk_create(feedback_services)
+        t = Thread(target=send_notification_async,
+                   args=(user_feedback.name, user_feedback.phone, user_feedback.source, services_data))
+        t.start()
+        # send_notification_async(user_feedback.name, user_feedback.phone, user_feedback.source, services_data)
         return user_feedback
