@@ -4,7 +4,7 @@ from django.utils.html import format_html
 
 from orders.forms import UserFeedbackForm
 from orders.models import UserFeedback, UserFeedbackService
-from shared.django.utils import send_notification, send_notification_async
+from shared.django.utils import send_notification
 
 
 @admin.register(UserFeedback)
@@ -36,4 +36,4 @@ class UserFeedbackAdmin(admin.ModelAdmin):
                                  selected_services]
             UserFeedbackService.objects.bulk_create(feedback_services)
 
-        send_notification_async(name, phone, source, selected_services)
+        send_notification(name, phone, source, selected_services)

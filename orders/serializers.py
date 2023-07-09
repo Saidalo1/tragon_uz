@@ -1,5 +1,3 @@
-from threading import Thread
-
 from rest_framework.exceptions import ValidationError
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
@@ -7,7 +5,7 @@ from rest_framework.serializers import ModelSerializer
 from orders.models import UserFeedback, UserFeedbackService
 from services.models import SubService
 from shared.django.functions import validate_phone_number
-from shared.django.utils import send_notification_async
+from shared.django.utils import send_notification
 from sources.models import Source
 
 
@@ -45,8 +43,5 @@ class UserFeedbackSerializer(ModelSerializer):
         feedback_services = [UserFeedbackService(feedback=user_feedback, service_id=service_data.pk) for service_data in
                              services_data]
         UserFeedbackService.objects.bulk_create(feedback_services)
-        t = Thread(target=send_notification_async,
-                   args=(user_feedback.name, user_feedback.phone, user_feedback.source, services_data))
-        t.start()
-        # send_notification_async(user_feedback.name, user_feedback.phone, user_feedback.source, services_data)
+        send_notification(user_feedback.name, user_feedback.phone, user_feedback.source, services_data)
         return user_feedback
