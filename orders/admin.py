@@ -36,4 +36,4 @@ class UserFeedbackAdmin(admin.ModelAdmin):
                                  selected_services]
             UserFeedbackService.objects.bulk_create(feedback_services)
 
-        send_notification(name, phone, source, selected_services)
+        send_notification.delay(name, phone, source, selected_services)

@@ -22,7 +22,7 @@ class UserFeedbackSerializer(ModelSerializer):
             validate_phone_number(value)
         except ValidationError:
             raise ValidationError(
-                'Invalid phone number. Please provide a valid phone number in the format of Uzbekistan.')
+                'Invalid phone number. Please, provide a valid phone number in the format of Uzbekistan.')
         return value
 
     @staticmethod
@@ -43,5 +43,8 @@ class UserFeedbackSerializer(ModelSerializer):
         feedback_services = [UserFeedbackService(feedback=user_feedback, service_id=service_data.pk) for service_data in
                              services_data]
         UserFeedbackService.objects.bulk_create(feedback_services)
-        send_notification(user_feedback.name, user_feedback.phone, user_feedback.source, services_data)
+
+        services_data_str = [str(service) for service in services_data]
+
+        send_notification.delay(user_feedback.name, user_feedback.phone, str(user_feedback.source), services_data_str)
         return user_feedback

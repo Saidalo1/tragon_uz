@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=507404as
+      - POSTGRES_DB=tragon_uz
+    networks:
+      - tragon-net
+
+  redis:
+    image: redis
+    networks:
+      - tragon-net
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    links:
+      - db:db
+    networks:
+      - tragon-net
+    command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    command: sh -c "sleep 10 && celery -A root worker --loglevel=info"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - tragon-net
+
+networks:
+  tragon-net:
+    driver: bridge

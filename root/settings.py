@@ -83,9 +83,9 @@ WSGI_APPLICATION = 'root.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os_environ_get('DATABASE_ENGINE'),
-        'NAME': os_environ_get('DATABASE_NAME'),
-        'USER': os_environ_get('DATABASE_USER'),
-        'PASSWORD': os_environ_get('DATABASE_PASS'),
+        'NAME': os_environ_get('POSTGRES_DB'),
+        'USER': os_environ_get('POSTGRES_USER'),
+        'PASSWORD': os_environ_get('POSTGRES_PASSWORD'),
         'HOST': os_environ_get('DATABASE_HOST'),
         'PORT': os_environ_get('DATABASE_PORT'),
     }
@@ -147,3 +147,10 @@ chat_id = os_environ_get('CHAT_ID')
 
 # Telebot
 bot = telebot.TeleBot(bot_token)
+
+# Celery Settings
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
