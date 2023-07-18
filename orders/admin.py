@@ -9,7 +9,7 @@ from shared.django.utils import send_notification
 
 @admin.register(UserFeedback)
 class UserFeedbackAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'get_ordered_services', 'source', 'created_at')
+    list_display = ('name', 'phone', 'get_ordered_services', 'source', 'created_at', 'total_price')
     form = UserFeedbackForm
 
     def get_ordered_services(self, obj):
@@ -26,14 +26,16 @@ class UserFeedbackAdmin(admin.ModelAdmin):
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         selected_services = form.cleaned_data.get('services')
-        name = form.cleaned_data.get('name')
-        phone = form.cleaned_data.get('phone')
-        source = form.cleaned_data.get('source')
 
         if selected_services:
             feedback = form.instance
-            feedback_services = [UserFeedbackService(feedback=feedback, service=service) for service in
-                                 selected_services]
-            UserFeedbackService.objects.bulk_create(feedback_services)
+            try:
+                UserFeedback.objects.get(name=feedback.name, source=feedback.source, phone=feedback.phone,
+                                         created_at=feedback.created_at)
+            except UserFeedback.DoesNotExist:
+                feedback_services = [UserFeedbackService(feedback=feedback, service=service) for service in
+                                     selected_services]
+                UserFeedbackService.objects.bulk_create(feedback_services)
 
-        send_notification.delay(name, phone, source, selected_services)
+                send_notification().delay(feedback.name, feedback.phone, str(feedback.source),
+                                          [str(service) for service in selected_services], feedback.total_price)

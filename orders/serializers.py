@@ -44,7 +44,6 @@ class UserFeedbackSerializer(ModelSerializer):
                              services_data]
         UserFeedbackService.objects.bulk_create(feedback_services)
 
-        services_data_str = [str(service) for service in services_data]
-
-        send_notification.delay(user_feedback.name, user_feedback.phone, str(user_feedback.source), services_data_str)
+        send_notification.delay(user_feedback.name, user_feedback.phone, str(user_feedback.source),
+                                [str(service) for service in services_data], user_feedback.total_price)  # list for JSON
         return user_feedback

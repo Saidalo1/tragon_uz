@@ -1,4 +1,4 @@
-from django.db.models import ForeignKey, CASCADE, CharField, ManyToManyField
+from django.db.models import ForeignKey, CASCADE, CharField, ManyToManyField, Sum
 
 from services.models import SubService
 from shared.django.models import CreatedTimeBaseModel
@@ -18,6 +18,10 @@ class UserFeedback(CreatedTimeBaseModel):
     phone = CharField(max_length=20)
     source = ForeignKey(Source, CASCADE)
     services = ManyToManyField(SubService, through=UserFeedbackService, related_name='feedbacks')
+
+    @property
+    def total_price(self):
+        return f"{self.services.aggregate(total=Sum('price'))['total'] or 0}$"
 
     class Meta:
         db_table = 'user_feedback'
